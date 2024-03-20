@@ -43,10 +43,11 @@ Decreasing the sharpness parameter blunts rule's sigmoidal curve, and obscures t
 |   |-- glider_sw.life
 |   |-- puffer_train.life
 |   `-- spaceship.life
-`-- sample                Sample ressults
-    |-- sharpness1.gif    --sharpness=1 --loop=100
-    |-- sharpness2.gif    --sharpness=2 --loop=100
-    |-- sharpness3.gif    --sharpness=3 --loop=100
-    |-- sharpness4.gif    --sharpness=4 --loop=100
-    `-- sharpness5.gif    --sharpness=5 --loop=100
+|-- Makefile              Sample results generator
+`-- sample                Sample results
+    |-- sharpness1.gif    --sharpness=1 --loop=200
+    |-- sharpness2.gif    --sharpness=2 --loop=200
+    |-- sharpness3.gif    --sharpness=3 --loop=200
+    |-- sharpness4.gif    --sharpness=4 --loop=200
+    `-- sharpness5.gif    --sharpness=5 --loop=200
 ```
