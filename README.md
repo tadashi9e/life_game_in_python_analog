@@ -5,13 +5,24 @@ Ordinary Conway's game of life is discrete(boolean)-valued cellular automata.
 This simulator represents a continuous-valued variant of Conway's game of life.
 Each cells has continuous value between 0.0 to 1.0 in this simulator.
 
+## Requirement
+
+- CuPy
+- OpenCV python
+
 ## Usage
 
 ```
-usage: life.py [-h] [--sharpness SHARPNESS] [--fps FPS]
-               [--with_grid WITH_GRID] [--loop LOOP] [--movie_file MOVIE_FILE]
-               [--movie_duration MOVIE_DURATION] [--gif_file GIF_FILE]
-               pattern_file
+usage: life.py [-h] [--width WIDTH] [--sharpness SHARPNESS] [--height HEIGHT]
+               [--pattern PATTERN]
+
+options:
+  -h, --help            show this help message and exit
+  --width WIDTH         Field width
+  --sharpness SHARPNESS
+                        Sharpness parameter
+  --height HEIGHT       Field height
+  --pattern PATTERN     Initial pattern file
 ```
 
 The rule in this simulator can be controlled by single parameter value "sharpness".
@@ -26,7 +37,6 @@ Decreasing the sharpness parameter blunts rule's sigmoidal curve, and obscures t
 |-- LICENSE
 |-- README.md             This file.
 |-- life.py               The simulator main codes.
-|-- life_display.py       GUI codes.
 |-- life_file.py          Life 1.05 pattern file reader/writer.
 |-- pattern               Sample Life 1.05 pattern files.
 |   |-- acorn.life
@@ -43,7 +53,6 @@ Decreasing the sharpness parameter blunts rule's sigmoidal curve, and obscures t
 |   |-- glider_sw.life
 |   |-- puffer_train.life
 |   `-- spaceship.life
-|-- Makefile              Sample results generator
 `-- sample                Sample results
     |-- sharpness1.gif    --sharpness=1 --loop=200
     |-- sharpness2.gif    --sharpness=2 --loop=200
