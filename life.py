@@ -1,11 +1,6 @@
 # -*- coding: utf-8; mode:python -*-
 import argparse
-import math
-import os
-import sys
-import collections
 import life_file
-import numpy as np
 import cupy as cp
 from cupyx.scipy import signal
 import cv2
