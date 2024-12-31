@@ -7,13 +7,33 @@ Each cells has continuous value between 0.0 to 1.0 in this simulator.
 
 ## Requirement
 
+### life.py
+
 - CuPy
+- NumPy
+- OpenCV python
+
+### life_torch.py
+
+- PyTorch
+- NumPy
 - OpenCV python
 
 ## Usage
 
 ```
 usage: life.py [-h] [--width WIDTH] [--sharpness SHARPNESS] [--height HEIGHT]
+               [--pattern PATTERN]
+
+options:
+  -h, --help            show this help message and exit
+  --width WIDTH         Field width
+  --sharpness SHARPNESS
+                        Sharpness parameter
+  --height HEIGHT       Field height
+  --pattern PATTERN     Initial pattern file
+
+usage: life_torch.py [-h] [--width WIDTH] [--sharpness SHARPNESS] [--height HEIGHT]
                [--pattern PATTERN]
 
 options:
@@ -36,7 +56,8 @@ Decreasing the sharpness parameter blunts rule's sigmoidal curve, and obscures t
 ```
 |-- LICENSE
 |-- README.md             This file.
-|-- life.py               The simulator main codes.
+|-- life.py               The simulator main codes (CuPy).
+|-- life_torch.py         The simulator main codes (PyTorch).
 |-- life_file.py          Life 1.05 pattern file reader/writer.
 |-- pattern               Sample Life 1.05 pattern files.
 |   |-- acorn.life

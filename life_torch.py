@@ -1,8 +1,11 @@
 # -*- coding: utf-8; mode:python -*-
 import argparse
+import math
+import os
+import sys
 import life_file
-import cupy as xp
-from cupyx.scipy import signal
+import numpy as np
+import torch
 import cv2
 
 class Field(object):
@@ -10,31 +13,39 @@ class Field(object):
         self._width = width
         self._height = height
         # Cells
-        self._cells = xp.zeros((height, width), dtype = xp.float32)
+        self._cells = torch.reshape(
+            torch.zeros((height, width), dtype = torch.float),
+            (1, 1, height, width))
         # Sharpness paraneter
         self._sharpness = sharpness
         # Moore neighborhood
-        self._neighbours = xp.array([
-            [1, 1, 1],
-            [1, 0, 1],
-            [1, 1, 1]], dtype = xp.float16)
+        self._neighbours = torch.reshape(
+            torch.tensor([
+                [1, 1, 1],
+                [1, 0, 1],
+                [1, 1, 1]], dtype = torch.float), (1, 1, 3, 3))
     def init_random(self):
         u'''
         Initialize all cells with random value.
         '''
-        self._cells = xp.random.rand(self._height, self._width,
-                                     dtype = xp.float32)
+        self._cells = torch.reshape(
+            torch.rand(
+                (self._height, self._width), dtype = torch.float),
+            (1, 1, self._height, self._width))
     def mask(self) -> None:
         u'''
         Clear field except center.
         '''
-        mesh_y, mesh_x = xp.meshgrid(
-            xp.arange(self._height),
-            xp.arange(self._width))
-        self._cells[xp.where(mesh_y < self._height / 3)] = 0
-        self._cells[xp.where(mesh_y > self._height * 2 / 3)] = 0
-        self._cells[xp.where(mesh_x < self._width / 3)] = 0
-        self._cells[xp.where(mesh_x > self._width * 2 / 3)] = 0
+        mesh_y, mesh_x = torch.meshgrid(
+            torch.arange(self._height, dtype = torch.float),
+            torch.arange(self._width, dtype = torch.float),
+            indexing = 'ij')
+        mask = (
+            (mesh_y > self._height / 3) &
+            (mesh_y < self._height * 2 / 3) &
+            (mesh_x > self._width / 3) &
+            (mesh_x < self._width * 2 / 3))
+        self._cells[:, :, ~mask] = 0
 
     def read_life_105_file(self, x: int, y: int, path: str):
         u'''
@@ -43,23 +54,25 @@ class Field(object):
         dots = life_file.read_life_105_file(x, y, path)
         life_file.write_life_105(dots)
         for (x, y) in dots:
-            self._cells[y % self._height][x % self._width] = 1.0
+            self._cells[0][0][y % self._height][x % self._width] = 1.0
     def get_current_cells(self):
         u'''
         Get current field image.
         '''
-        v = (self._cells * 255).astype(xp.uint8)
-        img = xp.stack([v, v, v], axis = 2)
-        return xp.asnumpy(img)
+        v = torch.reshape(self._cells * 255,
+                          (self._height, self._width)
+                          ).type(torch.uint8).numpy()
+        img = np.stack([v, v, v], axis = 2)
+        return img
     def update_cells(self) -> None:
         u'''
         Update cells.
         '''
-        n_sum = signal.convolve2d(self._cells, self._neighbours,
-                                  mode = 'same', boundary = 'wrap')
+        n_sum = torch.nn.functional.conv2d(
+            self._cells, self._neighbours, padding = 'same')
         self._cells = 0.5 * (
-            xp.tanh(self._sharpness * (n_sum - (2.5 - self._cells))) *
-            xp.tanh(self._sharpness * (3.5 - n_sum)) + 1.0)
+            torch.nn.Tanh()(self._sharpness * (n_sum - (2.5 - self._cells))) *
+            torch.nn.Tanh()(self._sharpness * (3.5 - n_sum)) + 1.0)
 
 def main() -> None:
     # --- Parameters
